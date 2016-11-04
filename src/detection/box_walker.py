@@ -12,6 +12,7 @@ from src.data.osm.street_loader import StreetLoader
 from src.detection.street_walker import StreetWalker
 from src.detection.tensor.detector import Detector
 from src.data.orthofoto.other.other_api import OtherApi
+from src.detection.tile_walker import TileWalker
 
 
 class BoxWalker:
@@ -56,14 +57,18 @@ class BoxWalker:
         self._printer("Stop street loading.")
 
     def walk(self):
-        ready_for_walk = (not self.tile is None) and (not self.streets is None) and (not self.convnet is None)
+        ready_for_walk = (not self.tile is None) and (not self.convnet is None)
         if not ready_for_walk:
-            error_message = "Not ready for walk. Load tiles, streets and convnet first"
+            error_message = "Not ready for walk. Load tiles and convnet first"
             self.logger.error(error_message)
             raise Exception(error_message)
 
         self._printer("Start detection.")
-        tiles = self._get_tiles_of_box(self.streets, self.tile)
+        if self.search.follow_streets:
+            tiles = self._get_tiles_of_box_with_streets(self.streets, self.tile)
+        else:
+            tiles = self._get_tiles_of_box(self.tile)
+
         self._printer(str(len(tiles)) + " images to analyze.")
 
         images = [tile.image for tile in tiles]
@@ -79,7 +84,13 @@ class BoxWalker:
             return self._compare_with_osm(merged_nodes)
         return merged_nodes
 
-    def _get_tiles_of_box(self, streets, tile):
+    def _get_tiles_of_box(self, tile):
+        tile_walker = TileWalker(tile=tile, square_image_length=self.square_image_length,
+                                 zoom_level=self.search.zoom_level)
+        tiles = tile_walker.get_tiles()
+        return tiles
+
+    def _get_tiles_of_box_with_streets(self, streets, tile):
         street_walker = StreetWalker(tile=tile, square_image_length=self.square_image_length,
                                      zoom_level=self.search.zoom_level)
         tiles = []

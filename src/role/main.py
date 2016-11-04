@@ -30,8 +30,10 @@ def manager(args, config):
         compare = config.getboolean(section='DETECTION', option='compare', fallback=True)
         orthofoto = config.get(section='DETECTION', option='orthofoto', fallback='other')
         network = config.get(section='DETECTION', option='network')
+        streets = config.getboolean(section='DETECTION', option='streets', fallback=True)
+
         search = Search(word=word, key=key, value=value, zoom_level=zoom, compare=compare, orthofoto=orthofoto,
-                        network=network)
+                        network=network, streets=streets)
         Manager.from_big_bbox(
             big_bbox,
             redis_args(config),

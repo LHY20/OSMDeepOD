@@ -16,9 +16,9 @@ def enqueue_results(result_nodes, redis_connection):
 
 def detect(bbox, redis, search):
     walker = BoxWalker(bbox=bbox, search=search)
-    walker.load_streets()
+    if search.follow_streets: walker.load_streets()
     crosswalk_nodes = []
-    if len(walker.streets) > 0:
+    if len(walker.streets) > 0 or not search.follow_streets:
         walker.load_convnet()
         walker.load_tiles()
         crosswalk_nodes = walker.walk()
