@@ -3,7 +3,7 @@ from src.detection.walker import Walker
 
 
 class TileWalker(Walker):
-    def __init__(self, tile, square_image_length=50, zoom_level=19):
+    def __init__(self, tile=None, square_image_length=50, zoom_level=19):
         super(TileWalker, self).__init__(tile, square_image_length, zoom_level)
 
     def get_tiles(self):

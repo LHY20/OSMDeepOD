@@ -97,7 +97,7 @@ def read_config(args):
     if not config.has_option('REDIS', 'password'): raise Exception("'password' no in 'REDIS' section! " + config_file)
     if not config.has_option('REDIS', 'port'): raise Exception("'port' no in 'REDIS' section! " + config_file)
 
-    if args.role == 'manager':
+    if args.role is 'manager':
         if not config.has_section('DETECTION'): raise Exception(
             "Section 'DETECTION' is not in config file! " + config_file)
         if not config.has_option('DETECTION', 'network'): raise Exception(

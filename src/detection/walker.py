@@ -2,7 +2,7 @@ from src.base.globalmaptiles import GlobalMercator
 
 
 class Walker:
-    def __init__(self, tile, square_image_length=50, zoom_level=19):
+    def __init__(self, tile=None, square_image_length=50, zoom_level=19):
         self.tile = tile
         self._nb_images = 0
         self._square_image_length = square_image_length
