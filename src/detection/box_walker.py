@@ -36,7 +36,7 @@ class BoxWalker:
         return class_()
 
     def load_convnet(self):
-        self.convnet = Detector()
+        self.convnet = Detector(labels_file=self.search.labels, graph_file=self.search.network)
         if not self.search.word in self.convnet.labels:
             error_message = self.search.word + " is not in label file."
             self.logger.error(error_message)

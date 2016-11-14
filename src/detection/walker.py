@@ -11,7 +11,7 @@ class Walker:
     def _calculate_step_distance(self, zoom_level):
         global_mercator = GlobalMercator()
         resolution = global_mercator.Resolution(zoom_level)
-        return resolution * (self._square_image_length / 1.6)
+        return resolution * (self._square_image_length / 1.5)
 
     def _get_squared_tiles(self, nodes):
         square_tiles = []
