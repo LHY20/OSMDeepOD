@@ -48,4 +48,5 @@ def roundabout_tag():
 
 @pytest.fixture(scope="session", autouse=True)
 def search_no_compare():
-    return Search(key='highway', value='crossing', word='crosswalk', compare=False)
+    parameters = dict(compare=False)
+    return Search(parameters=parameters)

@@ -23,17 +23,20 @@ def manager(args, config):
         args.bb_top)
     try:
         print('Manger has started...')
-        word = config.get(section='DETECTION', option='word', fallback='crosswalk')
-        key = config.get(section='DETECTION', option='key', fallback='highway')
-        value = config.get(section='DETECTION', option='value', fallback='crosswalk')
-        zoom = config.getint(section='DETECTION', option='zoom', fallback=19)
-        compare = config.getboolean(section='DETECTION', option='compare', fallback=True)
-        orthofoto = config.get(section='DETECTION', option='orthofoto', fallback='other')
-        network = config.get(section='DETECTION', option='network')
-        streets = config.getboolean(section='DETECTION', option='streets', fallback=True)
+        parameters = dict()
+        parameters['word'] = config.get(section='DETECTION', option='Word', fallback='crosswalk')
+        parameters['key'] = config.get(section='DETECTION', option='Key', fallback='highway')
+        parameters['value'] = config.get(section='DETECTION', option='Value', fallback='crosswalk')
+        parameters['zoom'] = config.getint(section='DETECTION', option='Zoom', fallback=19)
+        parameters['compare'] = config.getboolean(section='DETECTION', option='Compare', fallback=True)
+        parameters['orthofoto'] = config.get(section='DETECTION', option='Orthofoto', fallback='other')
+        parameters['network'] = config.get(section='DETECTION', option='Network')
+        parameters['labels'] = config.get(section='DETECTION', option='Labels')
+        parameters['streets'] = config.getboolean(section='DETECTION', option='Streets', fallback=True)
+        parameters['bbox_size'] = config.getint(section='JOB', option='BboxSize', fallback=2000)
+        parameters['timeout'] = config.getint(section='JOB', option='Timeout', fallback=5400)
+        search = Search(parameters=parameters)
 
-        search = Search(word=word, key=key, value=value, zoom_level=zoom, compare=compare, orthofoto=orthofoto,
-                        network=network, streets=streets)
         Manager.from_big_bbox(
             big_bbox,
             redis_args(config),
@@ -85,6 +88,21 @@ def set_logger():
     root_logger.setLevel(logging.WARNING)
 
 
+def check_manager_config(config):
+    if not config.has_section('DETECTION'): raise Exception(
+        "Section 'DETECTION' is not in config file!")
+
+    if not config.has_option('DETECTION', 'network'): raise Exception(
+        "'network' not in 'DETECTION' section! ")
+    network = config.get(section='DETECTION', option='network')
+    if not os.path.isfile(network): raise Exception("The config file does not exist! " + network)
+
+    labels = config.get(section='DETECTION', option='labels')
+    if not config.has_option('DETECTION', 'labels'): raise Exception(
+        "'labels' not in 'DETECTION' section! ")
+    if not os.path.isfile(labels): raise Exception("The config file does not exist! " + labels)
+
+
 def read_config(args):
     config_file = args.config
     config = configparser.ConfigParser()
@@ -93,16 +111,12 @@ def read_config(args):
     config.read(config_file)
     if not os.path.isfile(config_file): raise Exception("The config file could not be red! " + config_file)
     if not config.has_section('REDIS'): raise Exception("Section 'REDIS' is not in config file! " + config_file)
-    if not config.has_option('REDIS', 'server'): raise Exception("'server' no in 'REDIS' section! " + config_file)
-    if not config.has_option('REDIS', 'password'): raise Exception("'password' no in 'REDIS' section! " + config_file)
-    if not config.has_option('REDIS', 'port'): raise Exception("'port' no in 'REDIS' section! " + config_file)
+    if not config.has_option('REDIS', 'Server'): raise Exception("'server' no in 'REDIS' section! " + config_file)
+    if not config.has_option('REDIS', 'Password'): raise Exception("'password' no in 'REDIS' section! " + config_file)
+    if not config.has_option('REDIS', 'Port'): raise Exception("'port' no in 'REDIS' section! " + config_file)
 
     if args.role is 'manager':
-        if not config.has_section('DETECTION'): raise Exception(
-            "Section 'DETECTION' is not in config file! " + config_file)
-        if not config.has_option('DETECTION', 'network'): raise Exception(
-            "'network' no in 'DETECTION' section! " + config_file)
-        if not os.path.isfile(config_file): raise Exception("The config file does not exist! " + config_file)
+        check_manager_config(config)
     return config
 
 

@@ -9,9 +9,7 @@ from src.base.globalmaptiles import GlobalMercator
 from src.role.worker_functions import detect
 
 
-class Manager(object):
-    small_bbox_side_length = 2000.0
-    timeout = 5400
+class Manager:
 
     def __init__(self, bbox, job_queue_name, search=None):
         self.big_bbox = bbox
@@ -31,7 +29,7 @@ class Manager(object):
         m_minx, m_miny = self.mercator.LatLonToMeters(self.big_bbox.bottom, self.big_bbox.left)
         rows = self._calc_rows()
         columns = self._calc_columns()
-        side = Manager.small_bbox_side_length
+        side = self.search.bbox_size
 
         for x in range(0, columns):
             for y in range(0, rows):
@@ -47,20 +45,20 @@ class Manager(object):
             queue.enqueue_call(
                 func=detect,
                 args=(small_bbox, redis, self.search),
-                timeout=Manager.timeout)
+                timeout=self.search.timeout)
         print('Number of enqueued jobs in queue \'{0}\': {1}'.format(self.job_queue_name, len(queue)))
 
     def _calc_rows(self):
         _, m_miny = self.mercator.LatLonToMeters(self.big_bbox.bottom, self.big_bbox.left)
         _, m_maxy = self.mercator.LatLonToMeters(self.big_bbox.top, self.big_bbox.right)
         meter_in_y = m_maxy - m_miny
-        return int(math.ceil(meter_in_y / Manager.small_bbox_side_length))
+        return int(math.ceil(meter_in_y / self.search.bbox_size))
 
     def _calc_columns(self):
         m_min_x, _ = self.mercator.LatLonToMeters(self.big_bbox.bottom, self.big_bbox.left)
         m_max_x, _ = self.mercator.LatLonToMeters(self.big_bbox.top, self.big_bbox.right)
         meter_in_x = m_max_x - m_min_x
-        return int(math.ceil(meter_in_x / Manager.small_bbox_side_length))
+        return int(math.ceil(meter_in_x / self.search.bbox_size))
 
     @staticmethod
     def _search(search):

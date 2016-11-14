@@ -52,6 +52,6 @@ class Tile:
     def get_centre_node(self):
         diff_lat = self.bbox.node_right_up().latitude - self.bbox.node_left_down().latitude
         diff_lon = self.bbox.node_right_up().longitude - self.bbox.node_left_down().longitude
-        node = Node(self.bbox.node_left_down().latitude + diff_lat // 2,
-                    self.bbox.node_left_down().longitude + diff_lon // 2)
+        node = Node(self.bbox.node_left_down().latitude + diff_lat / 2,
+                    self.bbox.node_left_down().longitude + diff_lon / 2)
         return node

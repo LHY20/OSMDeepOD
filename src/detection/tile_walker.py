@@ -18,8 +18,8 @@ class TileWalker(Walker):
         left_up = self.tile.bbox.node_left_up()
 
         distance_row = left_down.get_distance_in_meter(left_up)
-        column = 1
-        row = 1
+        column = 0.5
+        row = 0.5
 
         while distance_row > self._step_distance:
             current_node_row = left_down.step_to(left_up, self._step_distance * row)
@@ -31,6 +31,6 @@ class TileWalker(Walker):
                 distance_column = current_node_column.get_distance_in_meter(right_down)
                 column += 1
             distance_row = current_node_row.get_distance_in_meter(left_up)
-            column = 1
+            column = 0.5
             row += 1
         return centers
